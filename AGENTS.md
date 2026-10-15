@@ -98,9 +98,10 @@
 
 ## 站点导航自动化
 
-- `programming/` 下的 Markdown 文章由 `.vitepress/config.mts` 在构建时递归扫描，并自动加入“编程技术”侧边栏；不再手工维护单篇文章的侧边栏链接。
-- 新文章必须放在对应知识分类目录，文件名使用小写英文及短横线；正文使用一级标题，推荐 frontmatter 的 `title` 字段。
-- `README.md` 与 `index.md` 不被自动列为普通文章。
-- `programming/index.md` 是人工维护的分类导览页，重要或精选文章可另行整理进去，但文章被侧边栏发现不依赖更新它。
-- 提交后检查 GitHub Actions 的 VitePress 构建是否成功；不能仅以 Markdown 已写入仓库作为网站已发布的证明。
-- 如新增其他分类的文章，应检查相应分类首页及导航是否能够访问，不要默认“仓库文件存在”等于“网站入口存在”。
+- 内容分类统一在 `scripts/content-index.mjs` 的 `categories` 中定义；新增分类时调整此配置并创建同名目录。
+- `npm run docs:build` 和 `npm run docs:dev` 会先运行自动索引脚本，根据分类目录中的 Markdown 文章生成各分类的 `index.md` 页面，同时 VitePress 侧边栏复用相同的扫描与分组规则。
+- 文章只需提交到对应分类目录，文件名使用小写英文和短横线；推荐在 frontmatter 中使用 `title` 字段，页面应有一级标题。
+- 按子目录自动分组；`README.md` 与 `index.md` 不作为普通文章；无需手动编辑分类首页文章清单。
+- `status: draft` 的文章不显示在自动目录中，**但仓库是 Public，内容仍公开可访问，不能用此字段存放秘密或隐私**。
+- 构建脚本会在构建工作区覆盖各分类的 `index.md`，这些页面属于生成结果；不要把手工维护的文章列表当作真值来源。
+- 提交后检查 GitHub Actions 的 VitePress 构建和 Pages 部署都成功，再确认站点页面；不能仅以 Markdown 已写入仓库作为网站已发布的证明。
