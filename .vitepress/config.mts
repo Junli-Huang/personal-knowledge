@@ -19,8 +19,15 @@ export default defineConfig({
       { text: 'GitHub', link: 'https://github.com/Junli-Huang/personal-knowledge' }
     ],
     sidebar: [
-      { text: '知识分类', items: [
-        { text: '编程技术', link: '/programming/' },
+      {
+        text: '编程技术',
+        items: [
+          { text: '编程技术目录', link: '/programming/' },
+          { text: '浅谈 C++ 的编译与链接', link: '/programming/cpp/compilation-and-linking' },
+          { text: 'C++ ODR、inline 与 static', link: '/programming/cpp/odr-inline-static' }
+        ]
+      },
+      { text: '其他知识分类', items: [
         { text: '游戏开发', link: '/game-development/' },
         { text: '创作研究', link: '/creative-writing/' },
         { text: '学习笔记', link: '/learning/' },
