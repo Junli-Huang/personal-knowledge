@@ -101,7 +101,7 @@
 - 内容分类统一在 `scripts/content-index.mjs` 的 `categories` 中定义；新增分类时调整此配置并创建同名目录。
 - `npm run docs:build` 和 `npm run docs:dev` 会先运行自动索引脚本，根据分类目录中的 Markdown 文章生成各分类的 `index.md` 页面，同时 VitePress 侧边栏复用相同的扫描与分组规则。
 - 文章只需提交到对应分类目录，文件名使用小写英文和短横线；推荐在 frontmatter 中使用 `title` 字段，页面应有一级标题。
-- 按子目录自动分组；`README.md` 与 `index.md` 不作为普通文章；无需手动编辑分类首页文章清单。
+- 按子目录自动分组，同一子目录的文章按 frontmatter `created` 倒序排列（最新在前）。建议新文章使用带时区的 ISO 8601 时间戳（如 `2026-10-15T07:11:48Z`），仅有日期也可以；同一时间戳按路径稳定排序，缺失或无效日期的文章排在末尾。`updated` 不影响顺序。\n- `README.md` 与 `index.md` 不作为普通文章；无需手动编辑分类首页文章清单。
 - `status: draft` 的文章不显示在自动目录中，**但仓库是 Public，内容仍公开可访问，不能用此字段存放秘密或隐私**。
 - 构建脚本会在构建工作区覆盖各分类的 `index.md`，这些页面属于生成结果；不要把手工维护的文章列表当作真值来源。
 - 提交后检查 GitHub Actions 的 VitePress 构建和 Pages 部署都成功，再确认站点页面；不能仅以 Markdown 已写入仓库作为网站已发布的证明。
