@@ -1,30 +1,17 @@
 import { defineConfig } from 'vitepress'
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve, sep } from 'node:path'
+import { categories, collectArticles, groupArticles } from '../scripts/content-index.mjs'
 
-const contentRoot = resolve(process.cwd(), 'programming')
-
-function collectProgrammingArticles(dir: string): { text: string; link: string }[] {
-  return readdirSync(dir, { withFileTypes: true })
-    .sort((a, b) => a.name.localeCompare(b.name, 'en'))
-    .flatMap(entry => {
-      const absolute = join(dir, entry.name)
-      if (entry.isDirectory()) {
-        return collectProgrammingArticles(absolute)
-      }
-      if (!entry.isFile() || !entry.name.endsWith('.md') || ['README.md', 'index.md'].includes(entry.name)) {
-        return []
-      }
-      const source = readFileSync(absolute, 'utf8')
-      const frontmatter = source.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/)
-      const title = frontmatter?.[1].match(/^title:\s*(.+)\s*$/m)?.[1]?.trim()
-        ?? source.match(/^#\s+(.+)$/m)?.[1]?.trim()
-        ?? entry.name.replace(/\.md$/, '')
-      const articlePath = relative(contentRoot, absolute).split(sep).join('/').replace(/\.md$/, '')
-      return [{ text: title, link: '/programming/' + articlePath }]
+const sidebar = Object.fromEntries(categories.map(category => {
+  const items = [{ text: `${category.title}目录`, link: `/${category.dir}/` }]
+  for (const [heading, articles] of groupArticles(collectArticles(category))) {
+    items.push({
+      text: heading,
+      collapsed: false,
+      items: articles.map(article => ({ text: article.title, link: article.link }))
     })
-}
-
+  }
+  return [`/${category.dir}/`, items]
+}))
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -38,28 +25,10 @@ export default defineConfig({
     siteTitle: 'Personal Knowledge',
     nav: [
       { text: '首页', link: '/' },
-      { text: '编程技术', link: '/programming/' },
-      { text: '游戏开发', link: '/game-development/' },
-      { text: '创作研究', link: '/creative-writing/' },
-      { text: '学习笔记', link: '/learning/' },
+      ...categories.map(category => ({ text: category.title, link: `/${category.dir}/` })),
       { text: 'GitHub', link: 'https://github.com/Junli-Huang/personal-knowledge' }
     ],
-    sidebar: [
-      {
-        text: '编程技术',
-        items: [
-          { text: '编程技术目录', link: '/programming/' },
-          ...collectProgrammingArticles(contentRoot)
-        ]
-      },
-      { text: '其他知识分类', items: [
-        { text: '游戏开发', link: '/game-development/' },
-        { text: '创作研究', link: '/creative-writing/' },
-        { text: '学习笔记', link: '/learning/' },
-        { text: '想法与探索', link: '/ideas/' },
-        { text: '生活研究', link: '/life/' }
-      ] }
-    ],
+    sidebar,
     search: { provider: 'local' },
     socialLinks: [{ icon: 'github', link: 'https://github.com/Junli-Huang/personal-knowledge' }],
     footer: { message: '持续积累，持续修订。', copyright: '© 2026 Personal Knowledge' },
