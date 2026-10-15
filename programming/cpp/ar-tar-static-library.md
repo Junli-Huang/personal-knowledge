@@ -1,6 +1,6 @@
 ---
 title: ar、tar 与静态库 .a
-created: 2026-10-15
+created: 2026-10-15T07:11:48Z
 updated: 2026-10-15
 tags: [C++, Linux, ar, tar, 静态库, 归档]
 status: review
