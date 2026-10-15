@@ -34,14 +34,20 @@ export function collectArticles(category) {
       const title = meta.match(/^title:\s*(.+?)\s*$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, '')
         ?? source.match(/^#\s+(.+)$/m)?.[1]?.trim()
         ?? entry.name.slice(0, -3)
+      const createdRaw = meta.match(/^created:\s*(.+?)\s*$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, '') ?? ''
+      // ISO 8601 日期或时间；未提供有效日期的旧文章排在最后。
+      const created = /^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(createdRaw)
+        ? Date.parse(createdRaw)
+        : NaN
+      const createdAt = Number.isFinite(created) ? created : -Infinity
       const slug = relative(base, absolute).split(sep).join('/').replace(/\.md$/, '')
       const folder = slug.includes('/') ? slug.slice(0, slug.lastIndexOf('/')) : ''
-      articles.push({ title, link: `/${category.dir}/${slug}`, folder })
+      articles.push({ title, link: `/${category.dir}/${slug}`, folder, createdAt })
     }
   }
 
   walk(base)
-  return articles.sort((a, b) => a.folder.localeCompare(b.folder, 'en') || a.title.localeCompare(b.title, 'zh-CN'))
+  return articles.sort((a, b) => a.folder.localeCompare(b.folder, 'en') || b.createdAt - a.createdAt || a.link.localeCompare(b.link, 'en'))
 }
 
 export function groupArticles(articles) {
