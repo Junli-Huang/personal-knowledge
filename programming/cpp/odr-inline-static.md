@@ -1,6 +1,6 @@
 ---
 title: C++ ODR、inline 与 static：为什么头文件中的定义有时不会冲突
-created: 2026-10-15
+created: 2026-10-15T06:47:13Z
 updated: 2026-10-15
 tags: [C++, ODR, inline, static, 头文件, 链接]
 status: review
