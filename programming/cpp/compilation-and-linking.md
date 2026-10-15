@@ -1,6 +1,6 @@
 ---
 title: 浅谈 C++ 的编译与链接
-created: 2026-10-15
+created: 2026-10-15T06:47:10Z
 updated: 2026-10-15
 tags: [C++, 编译, 链接, 翻译单元, MSVC]
 status: review
