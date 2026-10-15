@@ -1,4 +1,30 @@
 import { defineConfig } from 'vitepress'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join, relative, resolve, sep } from 'node:path'
+
+const contentRoot = resolve(process.cwd(), 'programming')
+
+function collectProgrammingArticles(dir: string): { text: string; link: string }[] {
+  return readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name, 'en'))
+    .flatMap(entry => {
+      const absolute = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        return collectProgrammingArticles(absolute)
+      }
+      if (!entry.isFile() || !entry.name.endsWith('.md') || ['README.md', 'index.md'].includes(entry.name)) {
+        return []
+      }
+      const source = readFileSync(absolute, 'utf8')
+      const frontmatter = source.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/)
+      const title = frontmatter?.[1].match(/^title:\s*(.+)\s*$/m)?.[1]?.trim()
+        ?? source.match(/^#\s+(.+)$/m)?.[1]?.trim()
+        ?? entry.name.replace(/\.md$/, '')
+      const articlePath = relative(contentRoot, absolute).split(sep).join('/').replace(/\.md$/, '')
+      return [{ text: title, link: '/programming/' + articlePath }]
+    })
+}
+
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -23,8 +49,7 @@ export default defineConfig({
         text: '编程技术',
         items: [
           { text: '编程技术目录', link: '/programming/' },
-          { text: '浅谈 C++ 的编译与链接', link: '/programming/cpp/compilation-and-linking' },
-          { text: 'C++ ODR、inline 与 static', link: '/programming/cpp/odr-inline-static' }
+          ...collectProgrammingArticles(contentRoot)
         ]
       },
       { text: '其他知识分类', items: [
